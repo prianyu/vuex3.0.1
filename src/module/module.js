@@ -36,7 +36,7 @@ export default class Module {
     return this._children[key]
   }
 
-  // 更新模块
+  // 更新模块，只会更新模块的actions、mutations、getters、namespaced
   update(rawModule) {
     this._rawModule.namespaced = rawModule.namespaced // 更新namespaced标记
     if (rawModule.actions) { // 更新actions

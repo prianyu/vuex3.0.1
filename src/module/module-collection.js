@@ -82,7 +82,7 @@ export default class ModuleCollection {
   }
 }
 
-// 更新模块
+// 更新模块，如热重载
 function update(path, targetModule, newModule) {
   if (process.env.NODE_ENV !== 'production') {
     assertRawModule(path, newModule)
