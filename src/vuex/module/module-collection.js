@@ -37,7 +37,7 @@ export default class ModuleCollection {
    * @param {Object} rawModule - 待注册的模块配置对象。
    * @param {boolean} runtime - 指示是否为运行时注册（即动态注册）。
    * Vuex支持模块的动态注册，动态注册使得Vuex模块更加灵活，一些第三方插件可以通过动态注册
-   * 在store中附加新模块的方式来使用Vuex的状态管理（如`vuex-router-sync`插件）
+   * 在store中附加新模块的方式来增强Vuex的状态管理（如`vuex-router-sync`插件）
    * 动态注册的模块可以也可以被卸载。然而，Vuex初始化时的模块不应该在运行时被删除，
    * 这是确保Vuex状态管理的可维护性和一致性考虑，因此Vuex在注册模块时，添加了runtime标记
    * 用于区分模块是静态注册还是动态注册

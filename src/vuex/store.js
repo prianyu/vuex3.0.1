@@ -3,7 +3,7 @@ import devtoolPlugin from './plugins/devtool'
 import ModuleCollection from './module/module-collection'
 import { forEachValue, isObject, isPromise, assert } from './util'
 
-// 用户存放安装插件时的Vue构造函数，与Vuex关联
+// 存放用户安装插件时的Vue构造函数，与Vuex关联
 let Vue // bind on install
 
 // Store 类
@@ -18,13 +18,13 @@ export class Store {
       install(window.Vue)
     }
 
-    // 运行时断言
+    // 断言
     if (process.env.NODE_ENV !== 'production') {
       // 未安装就使用则提示需要安装
       assert(Vue, `must call Vue.use(Vuex) before creating a store instance.`)
-      // 不支持Promise
+      // 不支持Promise提示需要提供polyfill，因为vuex依赖Promise（actions）
       assert(typeof Promise !== 'undefined', `vuex requires a Promise polyfill in this browser.`)
-      // 没有使用new操作符调用Store
+      // 只能使用new操作符调用Store
       assert(this instanceof Store, `Store must be called with the new operator.`)
     }
 
@@ -45,12 +45,12 @@ export class Store {
     // store internal state
     // 各种内部状态标识
     this._committing = false // 是否正在提交，用于mutation标记
-    this._actions = Object.create(null) // 存放action是对象
+    this._actions = Object.create(null) // 存放action的对象
     this._actionSubscribers = [] // 存放action订阅者
     this._mutations = Object.create(null) // 存放mutations对象
     this._wrappedGetters = Object.create(null) // 存放getters，用于计算属性
     this._modules = new ModuleCollection(options) // 创建根模块树
-    this._modulesNamespaceMap = Object.create(null) // 模块命名控件映射
+    this._modulesNamespaceMap = Object.create(null) // 模块与命名空间映射
     this._subscribers = [] // 订阅列表
     this._watcherVM = new Vue() // 一个vue实例，用于触发watcher
 
@@ -213,6 +213,8 @@ export class Store {
     this._modules.register(path, rawModule)
     // 安装模块
     installModule(this, this.state, path, this._modules.get(path), options.preserveState)
+
+    debugger
     // reset store to update getters...
     // 重置vm实例
     resetStoreVM(this, this.state)
@@ -342,7 +344,7 @@ function resetStoreVM(store, state, hot) {
  * @param {Object} store Vuex的store实例。
  * @param {Object} rootState store的根状态对象。
  * @param {Array} path 当前在状态树中的路径，用于确定模块的命名空间。
- * @param {Object} module 要安装的模块对象，包含state、mutation、action、getter和modules（如果有子模块）。
+ * @param {Object} module 要安装的模块对象，包含state、mutation、action、getters和modules（如果有子模块）。
  * @param {Boolean} hot 是否处于热更新模式
  */
 function installModule(store, rootState, path, module, hot) {
@@ -397,6 +399,7 @@ function installModule(store, rootState, path, module, hot) {
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
+  console.log(this)
 }
 
 /**
@@ -471,8 +474,9 @@ function makeLocalContext(store, namespace, path) {
 
 // 创建局部的getter代理对象
 function makeLocalGetters(store, namespace) {
+  // 定义一个getters代理对象
   const gettersProxy = {}
-
+  // 获取命名空间长度
   const splitPos = namespace.length
   // 遍历全局的getters
   Object.keys(store.getters).forEach(type => {
@@ -481,7 +485,8 @@ function makeLocalGetters(store, namespace) {
     if (type.slice(0, splitPos) !== namespace) return
 
     // extract local getter type
-    // 提取命名空间之后的内容，作为代理属性
+    // 走到这里说明命名空间匹配
+    // 截取命名空间之后的内容，作为代理属性
     const localType = type.slice(splitPos)
 
     // Add a port to the getters proxy.
@@ -607,7 +612,6 @@ function unifyObjectStyle(type, payload, options) {
 
 // 安装Vuex到Vue中的方法
 export function install(_Vue) {
-  debugger
   if (Vue && _Vue === Vue) { // 已安装
     // 如果不在生产环境中，输出错误信息到控制台
     if (process.env.NODE_ENV !== 'production') {
