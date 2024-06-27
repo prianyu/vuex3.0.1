@@ -113,17 +113,21 @@ function update(path, targetModule, newModule) {
   }
 }
 
+// 函数断言配置
 const functionAssert = {
   assert: value => typeof value === 'function',
   expected: 'function'
 }
 
+// 对象断言配置
+// 函数或者含有类型为函数的handler属性的对象
 const objectAssert = {
   assert: value => typeof value === 'function' ||
     (typeof value === 'object' && typeof value.handler === 'function'),
   expected: 'function or object with "handler" function'
 }
 
+// 断言的类型配置
 const assertTypes = {
   getters: functionAssert,
   mutations: functionAssert,
@@ -132,12 +136,16 @@ const assertTypes = {
 
 // 断言rawModule是否合法
 function assertRawModule(path, rawModule) {
+  // 遍历getters,mutations,actions
   Object.keys(assertTypes).forEach(key => {
     if (!rawModule[key]) return
 
+    // 获取断言配置
     const assertOptions = assertTypes[key]
 
+    // 遍历getters,mutations,actions
     forEachValue(rawModule[key], (value, type) => {
+      // 执行断言，不通过时抛出错误
       assert(
         assertOptions.assert(value),
         makeAssertionMessage(path, key, type, value, assertOptions.expected)
@@ -146,6 +154,7 @@ function assertRawModule(path, rawModule) {
   })
 }
 
+// 根据传入的配置生成断言错误信息
 function makeAssertionMessage(path, key, type, value, expected) {
   let buf = `${key} should be ${expected} but "${key}.${type}"`
   if (path.length > 0) {
