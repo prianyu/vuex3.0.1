@@ -1,6 +1,8 @@
 <template>
   <div>
-    {{  msg  }} {{  $store.state }}
+    {{  msg  }} {{  $store.state }} {{ $store.getters  }}
+    <a href="">{{ $store.state.count }}</a>
+    <a href="">{{ $store.getters.count }}</a>
     <Outer />
   </div>
 </template>

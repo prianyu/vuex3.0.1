@@ -61,24 +61,114 @@ Vue.use(Vuex)
 // })
 
 // getters proxy
+// const store = new Vuex.Store({
+//   state: {
+//     a: 1,
+//     b: 2
+//   },
+//   getters: {
+//     total: state => state.a + state.b
+//   },
+//   modules: {
+//     user: {
+//       namespaced: true,
+//       state: {
+//         lastName: 'Foo',
+//         firstName: 'Bar'
+//       },
+//       getters: {
+//         fullName: state => state.lastName + ' ' + state.firstName
+//       }
+//     }
+//   }
+// })
+
+// console.log(store)
+
+// multi mutations
+// const store = new Vuex.Store({
+//   state: {
+//     count: 0,
+//   },
+//   mutations: {
+//     increment(state) {
+//       state.count++
+//     }
+//   },
+//   modules: {
+//     inner: {
+//       state: {
+//         num: 0
+//       },
+//       mutations: {
+//         increment(state) {
+//           state.num++
+//         }
+//       }
+//     }
+//   }
+// })
+
+// store.commit('increment')
+// console.log(store.state)
+
+
+
 const store = new Vuex.Store({
+  strict: true,
   state: {
-    a: 1,
-    b: 2
+    firstName: 'Foo',
+    lastName: 'Bar',
   },
   getters: {
-    total: state => state.a + state.b
+    fullName(state) {
+      return state.firstName + ' ' + state.lastName
+    }
+  },
+  mutations: {
+    increment(state, payload) { }
+  },
+  actions: {
+    AsyncIncrement(context) { }
   },
   modules: {
-    user: {
-      namespaced: true,
+    inner1: {
+      namespaced: true, // 开启命名空间
       state: {
-        lastName: 'Foo',
-        firstName: 'Bar'
+        name: "inner1"
       },
       getters: {
-        fullName: state => state.lastName + ' ' + state.firstName
-      }
+        something(state, getters, rootState, rootGetters) {
+          return state.hours * state.price
+        }
+      },
+      mutations: {
+        increment(state) { }
+      },
+      actions: {
+        AsyncIncrement(context) {
+          context.commit('increment')
+        }
+      },
+    },
+    inner2: {
+      // 未开启命名空间
+      state: {
+        name: "inner2"
+      },
+      getters: {
+        something(state, getters, rootState, rootGetters) {
+          return state.hours * state.price
+        }
+      },
+      mutations: {
+        increment(state) { }
+      },
+      actions: {
+        AsyncIncrement(context) {
+          context.commit('increment')
+        }
+      },
     }
   }
 })

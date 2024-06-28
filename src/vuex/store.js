@@ -95,6 +95,8 @@ export class Store {
     }
   }
   // state读取会代理至vm._data.$$state
+  // 不是代理到`store._vm.$$state`是因为在Vue中，以`$`和`_`开头的属性被当作内部属性来看待，
+  // 是不会被代理到Vue实例上的。
   get state() {
     return this._vm._data.$$state
   }
@@ -214,7 +216,6 @@ export class Store {
     // 安装模块
     installModule(this, this.state, path, this._modules.get(path), options.preserveState)
 
-    debugger
     // reset store to update getters...
     // 重置vm实例
     resetStoreVM(this, this.state)
@@ -243,7 +244,7 @@ export class Store {
     resetStore(this, true)
   }
 
-  // 将执行上下文包裹committing标识为true的环境中
+  // 将执行上下文包裹committing标识为true的环境中，用与修改state
   _withCommit(fn) {
     const committing = this._committing
     this._committing = true
@@ -306,6 +307,12 @@ function resetStoreVM(store, state, hot) {
   // use a Vue instance to store the state tree
   // suppress warnings just in case the user has added
   // some funky global mixins
+  //忽略Vue实例化时的警告信息。这样做的原因是因为：
+  //这个Vue实例是Vuex用来响应式处理state的，属于内部使用的实例，
+  // 与用户业务上的Vue实例是不一样的。如果用户在全局定义了`mixin`（包括但不限于使用`Vue.mixin`和`Vue.use`定义），
+  // 而如果这些`mixin`在Vue实例化的时候触发了警告，那么这些警告信息可能会干扰到开发者对`Vuex`本身的调试与理解，
+  //从而感到困惑。为了避免这些全局的mixin触发的警告带来的问题，
+  // 所以这里临时将`Vue.config.silent`设置为`true`。
   const silent = Vue.config.silent
   Vue.config.silent = true
   // 添加store._vm实例，这是store响应式的核心
@@ -328,10 +335,16 @@ function resetStoreVM(store, state, hot) {
     if (hot) {
       // dispatch changes in all subscribed watchers
       // to force getter re-evaluation for hot reloading.
+      // 在热重载时，通过将store._vm实例的state设置为null，从而触发所有订阅的watcher，
+      // 就会触发getter的重新计算，进而触发热更新
       store._withCommit(() => {
         oldVm._data.$$state = null
       })
     }
+    // 销毁旧实例
+    // 放到nextTick回调中销毁是因为：此时有可能还存在基于旧实例的响应式依赖（如计算属性、监听器和渲染函数等）
+    // 为了确保在销毁 oldVm 之前，所有基于 oldVm 的响应式依赖都已经完成了它们的更新和清理工作
+    // 所以放到nextTick回调中销毁
     Vue.nextTick(() => oldVm.$destroy())
   }
 }
@@ -362,7 +375,8 @@ function installModule(store, rootState, path, module, hot) {
   // set state
   // 设置state
   // 当hot为true时以下逻辑不会执行，即state不会被设置
-  // 场景：在动态安装模块时，接收的第三个参数options中有preserveState属性，如果为true，则不会设置state
+  // 在动态安装模块时，接收的第三个参数options中有preserveState属性，如果为true，则不会设置state
+  // 该参数用于表示安装模块时是否要保留旧的状态，这通常在服务端渲染时使用
   if (!isRoot && !hot) {  // 非根模块且非热更新时，设置模块状态
     const parentState = getNestedState(rootState, path.slice(0, -1))
     const moduleName = path[path.length - 1]
@@ -399,7 +413,6 @@ function installModule(store, rootState, path, module, hot) {
   module.forEachChild((child, key) => {
     installModule(store, rootState, path.concat(key), child, hot)
   })
-  console.log(this)
 }
 
 /**
