@@ -8,6 +8,7 @@
 </template>
 <script>
 import Outer from "./components/Outer.vue"
+import {mapState} from './vuex/helpers'
 export default {
   components: {
     Outer
@@ -30,6 +31,9 @@ export default {
   mounted() {
     console.log("App mounted")
   },
+  computed: {
+    ...mapState(123)
+  }
 
 }
 

@@ -50,7 +50,7 @@ export class Store {
     this._mutations = Object.create(null) // 存放mutations对象
     this._wrappedGetters = Object.create(null) // 存放getters，用于计算属性
     this._modules = new ModuleCollection(options) // 创建根模块树
-    this._modulesNamespaceMap = Object.create(null) // 模块与命名空间映射
+    this._modulesNamespaceMap = Object.create(null) // 模块与命名空间映射，，辅助函数的模块会从该对象获取
     this._subscribers = [] // 订阅列表
     this._watcherVM = new Vue() // 一个vue实例，用于触发watcher
 

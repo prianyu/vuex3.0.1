@@ -126,7 +126,11 @@ const store = new Vuex.Store({
     }
   },
   mutations: {
-    increment(state, payload) { }
+    increment(state, payload) {
+      setTimeout(() => {
+        state.firstName = payload.firstName
+      }, 1000)
+    }
   },
   actions: {
     AsyncIncrement(context) { }
@@ -174,6 +178,9 @@ const store = new Vuex.Store({
 })
 
 console.log(store)
+
+// store.commit('increment', { firstName: 'asdgasdgasgsg' })
+store.state.firstName = "28888"
 
 
 

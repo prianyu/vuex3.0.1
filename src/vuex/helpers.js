@@ -72,7 +72,7 @@ export const mapGetters = normalizeNamespace((namespace, getters) => {
         console.error(`[vuex] unknown getter: ${val}`)
         return
       }
-      // 从$.store.getters中获取
+      // 从$store.getters中获取
       return this.$store.getters[val]
     }
     // mark vuex getter for devtools
@@ -121,7 +121,7 @@ export const createNamespacedHelpers = (namespace) => ({
 function normalizeMap(map) {
   return Array.isArray(map)
     ? map.map(key => ({ key, val: key }))
-    : Object.keys(map).map(key => ({ key, val: map[key] }))
+    : Object.keys(map).map(key => ({ key, val: map[key] })) // 此处如果是非Object会返回空数组
 }
 
 // 接收一个回调函数并返回一个接收namespace和map，可以规范化参数的新函数
