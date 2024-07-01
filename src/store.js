@@ -127,6 +127,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     increment(state, payload) {
+      // 违反规范使用异步
       setTimeout(() => {
         state.firstName = payload.firstName
       }, 1000)
@@ -180,7 +181,7 @@ const store = new Vuex.Store({
 console.log(store)
 
 // store.commit('increment', { firstName: 'asdgasdgasgsg' })
-store.state.firstName = "28888"
+store.state.firstName = "28888" // 违反规范直接修改
 
 
 
