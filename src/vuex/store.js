@@ -268,15 +268,19 @@ function genericSubscribe(fn, subs) {
 }
 
 
+// 重置store
 function resetStore(store, hot) {
+  // 重置实例属性
   store._actions = Object.create(null)
   store._mutations = Object.create(null)
   store._wrappedGetters = Object.create(null)
   store._modulesNamespaceMap = Object.create(null)
   const state = store.state
   // init all modules
+  // 安装根模块
   installModule(store, state, [], store._modules.root, true)
   // reset vm
+  // 重置store._vm实例
   resetStoreVM(store, state, hot)
 }
 // 重置store._vm实例
@@ -388,6 +392,7 @@ function installModule(store, rootState, path, module, hot) {
   // 创建模块的局部上下文对象，用于访问局部状态和命名空间
   // 模块可以有自己的命名空间，这意味着模块内的actions和mutations可以通过特定的前缀来区分
   // 从而避免与全局或其它模块的actions和mutations冲突
+  // 辅助函数模块获取后会从module.context属性获取局部上下文
   const local = module.context = makeLocalContext(store, namespace, path)
 
   // 遍历module._rawModule.mutations,注册模块的mutation

@@ -130,7 +130,7 @@ const store = new Vuex.Store({
       // 违反规范使用异步
       setTimeout(() => {
         state.firstName = payload.firstName
-      }, 1000)
+      }, 2000)
     }
   },
   actions: {
