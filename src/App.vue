@@ -1,40 +1,18 @@
 <template>
   <div>
-    {{  msg  }} {{  $store.state }} {{ $store.getters  }}
-    <a href="">{{ $store.state.count }}</a>
-    <a href="">{{ $store.getters.count }}</a>
-    <Outer />
+    <h1>{{ title }}</h1> 
+    <div>
+      {{ $store.state }}
+    </div>
   </div>
 </template>
+
 <script>
-import Outer from "./components/Outer.vue"
-import {mapState} from './vuex/helpers'
 export default {
-  components: {
-    Outer
-  },
   data() {
     return {
-      msg: "hello world"
+      title: "Vuex"
     }
-  },
-
-  beforeCreate() {
-    console.log("App beforeCreate")
-  },
-  created() {
-    console.log("App created")
-  },
-  beforeMount() {
-    console.log("App beforeMount")
-  },
-  mounted() {
-    console.log("App mounted")
-  },
-  computed: {
-    ...mapState(123)
   }
-
 }
-
 </script>

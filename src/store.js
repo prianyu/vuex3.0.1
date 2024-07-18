@@ -1,188 +1,95 @@
-import Vue from 'vue'
+import Vue from "vue"
 import Vuex from './vuex'
 
 Vue.use(Vuex)
 
-// module map
-// const store = new Vuex.Store({
-//   namespaced: true,
-//   state: {
-//     count: 0
-//   },
-//   mutations: {
-//     increment(state) {
-//       state.count++
-//     }
-//   },
-//   modules: {
-//     cart: {
-//       namespaced: true,
-//       list: [],
-//       mutations: {
-//         add(state, payload) {
-//           state.list.push(payload)
-//         }
-//       }
-//     },
-//     goods: {
-//       name: "apple",
-//       mutations: {
-//         reduce(state, payload) {
-//           state.name = payload
-//         }
-//       }
-//     }
-//   }
-// })
-// nested module state
-// const store = new Vuex.Store({
-//   state: {
-//     count: 0
-//   },
-//   modules: {
-//     a: {
-//       state: {
-//         name: "Foo"
-//       }
-//     },
-//     b: {
-//       state: {
-//         name: "Bar",
-//       },
-//       modules: {
-//         c: {
-//           state: {
-//             name: "Baz"
-//           }
-//         }
-//       }
-//     }
-//   }
-// })
-
-// getters proxy
-// const store = new Vuex.Store({
-//   state: {
-//     a: 1,
-//     b: 2
-//   },
-//   getters: {
-//     total: state => state.a + state.b
-//   },
-//   modules: {
-//     user: {
-//       namespaced: true,
-//       state: {
-//         lastName: 'Foo',
-//         firstName: 'Bar'
-//       },
-//       getters: {
-//         fullName: state => state.lastName + ' ' + state.firstName
-//       }
-//     }
-//   }
-// })
-
-// console.log(store)
-
-// multi mutations
-// const store = new Vuex.Store({
-//   state: {
-//     count: 0,
-//   },
-//   mutations: {
-//     increment(state) {
-//       state.count++
-//     }
-//   },
-//   modules: {
-//     inner: {
-//       state: {
-//         num: 0
-//       },
-//       mutations: {
-//         increment(state) {
-//           state.num++
-//         }
-//       }
-//     }
-//   }
-// })
-
-// store.commit('increment')
-// console.log(store.state)
-
-
-
+debugger
 const store = new Vuex.Store({
   strict: true,
+
   state: {
-    firstName: 'Foo',
-    lastName: 'Bar',
+    count: 0,
+    firstName: "Foo",
+    lastName: "Bar"
   },
+
   getters: {
     fullName(state) {
-      return state.firstName + ' ' + state.lastName
+      return `${state.firstName} ${state.lastName}`
     }
   },
+
   mutations: {
-    increment(state, payload) {
-      // 违反规范使用异步
-      setTimeout(() => {
-        state.firstName = payload.firstName
-      }, 2000)
+    ADD(state) {
+      state.count++
+    },
+    CHANGE_FIRST_NAME(state, payload) {
+      state.firstName = payload
     }
   },
+
   actions: {
-    AsyncIncrement(context) { }
+    changeFirstName({ commit }) {
+      setTimeout(() => {
+        commit("CHANGE_FIRST_NAME", 'Foo' + Math.random())
+      }, 0)
+    }
   },
+
   modules: {
-    inner1: {
-      namespaced: true, // 开启命名空间
+    cart: {
+      namespaced: true,
       state: {
-        name: "inner1"
+        count: 0
       },
+
       getters: {
-        something(state, getters, rootState, rootGetters) {
-          return state.hours * state.price
+        info(state, getters, rootState, rootGetters) {
+          return `${rootGetters}买了${state.count}件商品`
         }
       },
+
       mutations: {
-        increment(state) { }
-      },
-      actions: {
-        AsyncIncrement(context) {
-          context.commit('increment')
+        ADD(state) {
+          state.count++
         }
       },
+
+      actions: {
+        add({ commit }) {
+          commit("ADD")
+        }
+      }
     },
-    inner2: {
-      // 未开启命名空间
+
+    goods: {
       state: {
-        name: "inner2"
+        list: ['Banana', "Apple", "Orange"]
       },
+
       getters: {
-        something(state, getters, rootState, rootGetters) {
-          return state.hours * state.price
+        all(state) {
+          return state.list.join("|")
         }
       },
+
       mutations: {
-        increment(state) { }
-      },
-      actions: {
-        AsyncIncrement(context) {
-          context.commit('increment')
+        ADD(state, payload) {
+          state.list.push(payload)
         }
       },
+
+      actions: {
+        add({ commit }, payload) {
+          commit("ADD", 'peach')
+        }
+      }
     }
   }
 })
 
 console.log(store)
 
-// store.commit('increment', { firstName: 'asdgasdgasgsg' })
-store.state.firstName = "28888" // 违反规范直接修改
-
-
+// store.dispatch("add") // multi actions
 
 export default store
